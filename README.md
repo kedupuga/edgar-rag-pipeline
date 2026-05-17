@@ -1,0 +1,2 @@
+# edgar-rag-pipeline
+A PySpark-based Retrieval Augmented Generation (RAG) pipeline that extracts financial variables from SEC EDGAR 10-K filings. Streams company filings from HuggingFace, chunks and embeds section text using OpenAI embeddings, retrieves relevant passages via cosine similarity, and extracts structured values using GPT-4o. Includes automated ground truth generation via regex and an end-to-end evaluation framework.
