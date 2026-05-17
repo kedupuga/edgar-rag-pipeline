@@ -1,2 +1,13 @@
-# edgar-rag-pipeline
-A PySpark-based Retrieval Augmented Generation (RAG) pipeline that extracts financial variables from SEC EDGAR 10-K filings. Streams company filings from HuggingFace, chunks and embeds section text using OpenAI embeddings, retrieves relevant passages via cosine similarity, and extracts structured values using GPT-4o. Includes automated ground truth generation via regex and an end-to-end evaluation framework.
+# AIG RAG Pipeline — SEC 10-K Data Extraction
+
+A Retrieval Augmented Generation (RAG) pipeline that extracts financial variables from SEC EDGAR 10-K filings using PySpark, OpenAI embeddings, and GPT-4o.
+
+## Overview
+
+The pipeline reads a single company's annual 10-K filing from the EDGAR corpus, chunks the relevant sections, retrieves the most semantically relevant passages for each target variable, and uses an LLM to extract the values. Results are compared against an auto-generated ground truth.
+
+**Target variables:**
+- `Total Revenues` — numeric
+- `Net Income` — numeric  
+- `Business Segment` — categorical
+
