@@ -32,14 +32,7 @@ def build_results(ground_truth_df, extracted, company, year):
         gt_norm = normalize(gt_value)
         ex_norm = normalize(extracted_value)
 
-        is_match = False
-        if gt_norm is not None and ex_norm is not None:
-            try:
-                gt_f, ex_f = float(gt_norm), float(ex_norm)
-                # 1% tolerance handles rounding differences across fiscal year columns
-                is_match = abs(gt_f - ex_f) / (abs(gt_f) + 1e-9) < 0.01
-            except ValueError:
-                is_match = gt_norm == ex_norm
+        is_match = gt_norm is not None and ex_norm is not None and gt_norm == ex_norm
 
         records.append({
             "company": company,
