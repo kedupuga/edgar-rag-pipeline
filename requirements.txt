@@ -1,4 +1,4 @@
-pyspark>=3.4.0 
+pyspark>=3.4.0,<4.0.0
 datasets>=2.14.0,<3.0.0
 python-dotenv>=1.0.0 
 pandas>=2.0.0 
