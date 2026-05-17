@@ -11,7 +11,6 @@ def normalize(value):
         return None
 
     val = str(value).strip()
-    # strip trailing unit words the LLM might append (e.g. "3,701 million")
     val = re.sub(r"\s*(million|billion|thousand|mn|bn)\b.*$", "", val, flags=re.IGNORECASE)
     val = val.replace(",", "").replace("$", "").strip()
 
@@ -21,14 +20,11 @@ def normalize(value):
         return val.lower()
 
 
-def _is_match(extracted_value, gt_value):
+def _is_match(extracted_values, gt_value):
     gt_norm = normalize(gt_value)
     if gt_norm is None:
         return False
-
-    # split on ", " not "," so formatted numbers like "49,520" stay intact
-    parts = [normalize(p) for p in str(extracted_value).split(", ")]
-    return any(p == gt_norm for p in parts if p is not None)
+    return any(normalize(v) == gt_norm for v in extracted_values if normalize(v) is not None)
 
 
 def build_results(ground_truth_df, extracted, company, year):
@@ -40,17 +36,17 @@ def build_results(ground_truth_df, extracted, company, year):
         gt_value = row["value"]
 
         ext = extracted_map.get(variable, {})
-        extracted_value = ext.get("value")
+        extracted_values = ext.get("values", [])
         context = ext.get("context")
 
-        is_match = extracted_value is not None and _is_match(extracted_value, gt_value)
+        is_match = bool(extracted_values) and _is_match(extracted_values, gt_value)
 
         records.append({
             "company": company,
             "year": year,
             "variable": variable,
             "ground_truth": gt_value,
-            "extracted_value": extracted_value,
+            "extracted_values": ", ".join(str(v) for v in extracted_values),
             "match": is_match,
             "context": context,
         })
@@ -69,8 +65,8 @@ def print_summary(results_df):
     for _, row in results_df.iterrows():
         status = "PASS" if row["match"] else "FAIL"
         print(f"[{status}] {row['variable']}")
-        print(f"    Ground Truth : {row['ground_truth']}")
-        print(f"    Extracted    : {row['extracted_value']}")
+        print(f"    Ground Truth     : {row['ground_truth']}")
+        print(f"    Extracted Values : {row['extracted_values']}")
         print()
 
     total = len(results_df)

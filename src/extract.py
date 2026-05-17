@@ -3,16 +3,17 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-EXTRACTION_TEMPLATE = """From the {filing_type} filing text below, extract the value for: "{variable}"
+EXTRACTION_TEMPLATE = """From the {filing_type} filing text below, extract ALL distinct values for: "{variable}"
 
 Rules:
-- For numeric values, return the plain number only — no units, no currency symbols (e.g. return "3,701" not "$3,701 million")
-- For numeric values, prefer the most recent fiscal year's consolidated figure
-- For segment names, list the operating sub-segments (not top-level groups) separated by commas (e.g. "North America, International, Individual Retirement")
-- If the value is not found, return null
+- Return every distinct value you find — do not pick just one
+- For numeric values, return plain numbers only, no units or currency symbols (e.g. "49,746" not "$49,746 million")
+- For segment names, return each segment name as a separate entry in the list
+- Do not repeat the same value twice
+- If no values are found, return an empty list
 
 Respond ONLY with a JSON object in this exact format:
-{{"variable": "{variable}", "value": "<extracted value or null>", "context": "<short quote from text showing where you found it, or null>"}}
+{{"variable": "{variable}", "values": ["value1", "value2", "..."], "context": "<short quote showing where you found the values>"}}
 
 Text:
 {context}
@@ -21,9 +22,9 @@ Text:
 
 def _system_prompt(filing_type):
     return (
-        f"You are a financial document analyst. Your job is to extract specific "
-        f"financial values from SEC {filing_type} filing excerpts. Be precise. "
-        f"Return only what is explicitly stated in the text."
+        f"You are a financial document analyst. Extract specific financial values "
+        f"from SEC {filing_type} filing excerpts. Return only what is explicitly "
+        f"stated in the text. Be thorough — find all distinct occurrences."
     )
 
 
@@ -44,11 +45,15 @@ def extract_variable(variable, retrieved_chunks, client, model="gpt-4o-mini", fi
             response_format={"type": "json_object"},
         )
         result = json.loads(response.choices[0].message.content)
+        # handle models that return "value" instead of "values"
+        if "values" not in result:
+            v = result.get("value")
+            result["values"] = [v] if v and str(v).lower() not in ("null", "none") else []
     except Exception as e:
         logger.error(f"LLM extraction failed for '{variable}': {e}")
-        result = {"variable": variable, "value": None, "context": None}
+        result = {"variable": variable, "values": [], "context": None}
 
-    logger.info(f"Extracted '{variable}' → {result.get('value')}")
+    logger.info(f"Extracted '{variable}' -> {result.get('values')}")
     return result
 
 
@@ -58,7 +63,7 @@ def extract_all_variables(variables, chunks_per_variable, client, model="gpt-4o-
         chunks = chunks_per_variable.get(var, [])
         if not chunks:
             logger.warning(f"No chunks for '{var}', skipping")
-            results.append({"variable": var, "value": None, "context": None})
+            results.append({"variable": var, "values": [], "context": None})
             continue
         results.append(extract_variable(var, chunks, client, model, filing_type))
     return results
