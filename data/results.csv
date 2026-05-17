@@ -1,0 +1,16 @@
+company,year,variable,ground_truth,extracted_values,match
+AIG,2019,Total Revenues,"49,746","49,520, 47,389, 49,746, 48,802, 3,360, 1,328",True
+AIG,2019,Total Revenues,"47,389","49,520, 47,389, 49,746, 48,802, 3,360, 1,328",True
+AIG,2019,Total Revenues,"49,520","49,520, 47,389, 49,746, 48,802, 3,360, 1,328",True
+AIG,2019,Total Revenues,"48,802","49,520, 47,389, 49,746, 48,802, 3,360, 1,328",True
+AIG,2019,Total Revenues,"46,506","49,520, 47,389, 49,746, 48,802, 3,360, 1,328",False
+AIG,2019,Net Income,"3,701","3,701, 3,348, 4,757, 4,169, 3,326, -6, -262, 3,268, -401, -2,538, -6,084",True
+AIG,2019,Net Income,"3,348","3,701, 3,348, 4,757, 4,169, 3,326, -6, -262, 3,268, -401, -2,538, -6,084",True
+AIG,2019,Net Income,"3,326","3,701, 3,348, 4,757, 4,169, 3,326, -6, -262, 3,268, -401, -2,538, -6,084",True
+AIG,2019,Net Income,"3,268","3,701, 3,348, 4,757, 4,169, 3,326, -6, -262, 3,268, -401, -2,538, -6,084",True
+AIG,2019,Net Income,"4,169","3,701, 3,348, 4,757, 4,169, 3,326, -6, -262, 3,268, -401, -2,538, -6,084",True
+AIG,2019,Business Segment,North America,"General Insurance, Life and Retirement, Other Operations, Legacy Portfolio, North America, International, Individual Retirement, Group Retirement, Life Insurance, Institutional Markets",True
+AIG,2019,Business Segment,International,"General Insurance, Life and Retirement, Other Operations, Legacy Portfolio, North America, International, Individual Retirement, Group Retirement, Life Insurance, Institutional Markets",True
+AIG,2019,Business Segment,Individual Retirement,"General Insurance, Life and Retirement, Other Operations, Legacy Portfolio, North America, International, Individual Retirement, Group Retirement, Life Insurance, Institutional Markets",True
+AIG,2019,Business Segment,Group Retirement,"General Insurance, Life and Retirement, Other Operations, Legacy Portfolio, North America, International, Individual Retirement, Group Retirement, Life Insurance, Institutional Markets",True
+AIG,2019,Business Segment,Life Insurance,"General Insurance, Life and Retirement, Other Operations, Legacy Portfolio, North America, International, Individual Retirement, Group Retirement, Life Insurance, Institutional Markets",True
