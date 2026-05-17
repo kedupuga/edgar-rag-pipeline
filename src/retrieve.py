@@ -11,12 +11,12 @@ logger = logging.getLogger(__name__)
 # almost no natural language for embeddings to distinguish on.
 VARIABLE_CONFIG = {
     "Total Revenues": {
-        "query": "Total revenues condensed consolidating statements of income operations AIG parent subsidiary",
+        "query": "Total revenues condensed consolidating statements of income AIG consolidated parent subsidiary",
         "sections": ["section_7", "section_8"],
         "keywords": ["total revenues", "total revenue"],
     },
     "Net Income": {
-        "query": "Net income condensed consolidating statements of income operations AIG parent subsidiary",
+        "query": "Net income attributable to AIG consolidated statements of income parent subsidiary Fortitude",
         "sections": ["section_7", "section_8"],
         "keywords": ["net income", "net loss"],
     },

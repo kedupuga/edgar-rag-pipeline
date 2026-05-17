@@ -37,7 +37,6 @@ def build_results(ground_truth_df, extracted, company, year):
 
         ext = extracted_map.get(variable, {})
         extracted_values = ext.get("values", [])
-        context = ext.get("context")
 
         is_match = bool(extracted_values) and _is_match(extracted_values, gt_value)
 
@@ -48,7 +47,6 @@ def build_results(ground_truth_df, extracted, company, year):
             "ground_truth": gt_value,
             "extracted_values": ", ".join(str(v) for v in extracted_values),
             "match": is_match,
-            "context": context,
         })
 
     results_df = pd.DataFrame(records)
