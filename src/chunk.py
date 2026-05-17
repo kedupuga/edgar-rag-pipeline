@@ -1,5 +1,7 @@
 import re
+import os
 import logging
+from pathlib import Path
 
 import pandas as pd
 from pyspark.sql import SparkSession
@@ -9,6 +11,14 @@ logger = logging.getLogger(__name__)
 
 # section_7 = MD&A, section_8 = financial statements, section_1 = business overview
 TARGET_SECTIONS = ["section_1", "section_7", "section_7A", "section_8"]
+
+_CHUNKS_TMP = os.path.abspath("./data/raw/chunks_tmp.parquet")
+
+_CHUNKS_SCHEMA = StructType([
+    StructField("section", StringType(), True),
+    StructField("chunk_id", StringType(), True),
+    StructField("text", StringType(), True),
+])
 
 
 def clean_text(text):
@@ -53,9 +63,9 @@ def extract_chunks_from_filing(filing, chunk_size=500, overlap=50):
 
 
 def chunks_to_spark_df(chunks, spark: SparkSession):
-    schema = StructType([
-        StructField("section", StringType(), True),
-        StructField("chunk_id", StringType(), True),
-        StructField("text", StringType(), True),
-    ])
-    return spark.createDataFrame(pd.DataFrame(chunks), schema=schema)
+    # PySpark 3.5 + Python 3.12+ have a cloudpickle incompatibility that breaks
+    # createDataFrame when passing Python objects directly. Writing via pandas and
+    # reading back with spark.read bypasses that serialization path entirely.
+    Path(_CHUNKS_TMP).parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(chunks).to_parquet(_CHUNKS_TMP, index=False)
+    return spark.read.schema(_CHUNKS_SCHEMA).parquet(_CHUNKS_TMP)
