@@ -1,3 +1,4 @@
+import re
 import logging
 
 import pandas as pd
@@ -9,12 +10,25 @@ def normalize(value):
     if value is None or str(value).strip().lower() in ("none", "null", ""):
         return None
 
-    val = str(value).replace(",", "").replace("$", "").strip()
+    val = str(value).strip()
+    # strip trailing unit words the LLM might append (e.g. "3,701 million")
+    val = re.sub(r"\s*(million|billion|thousand|mn|bn)\b.*$", "", val, flags=re.IGNORECASE)
+    val = val.replace(",", "").replace("$", "").strip()
 
     try:
         return str(float(val))
     except ValueError:
         return val.lower()
+
+
+def _is_match(extracted_value, gt_value):
+    gt_norm = normalize(gt_value)
+    if gt_norm is None:
+        return False
+
+    # split on ", " not "," so formatted numbers like "49,520" stay intact
+    parts = [normalize(p) for p in str(extracted_value).split(", ")]
+    return any(p == gt_norm for p in parts if p is not None)
 
 
 def build_results(ground_truth_df, extracted, company, year):
@@ -29,10 +43,7 @@ def build_results(ground_truth_df, extracted, company, year):
         extracted_value = ext.get("value")
         context = ext.get("context")
 
-        gt_norm = normalize(gt_value)
-        ex_norm = normalize(extracted_value)
-
-        is_match = gt_norm is not None and ex_norm is not None and gt_norm == ex_norm
+        is_match = extracted_value is not None and _is_match(extracted_value, gt_value)
 
         records.append({
             "company": company,

@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 VARIABLE_QUERIES = {
     "Total Revenues": "What is the total revenue or total net revenues for the company?",
     "Net Income": "What is the net income or net loss attributable to the company?",
-    "Business Segment": "What are the business segments or reportable segments of the company?",
+    "Business Segment": "What are the operating sub-segments or divisions within each business segment, such as North America, International, Individual Retirement, Group Retirement, Life Insurance?",
 }
 
 

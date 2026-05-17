@@ -6,9 +6,9 @@ logger = logging.getLogger(__name__)
 EXTRACTION_TEMPLATE = """From the {filing_type} filing text below, extract the value for: "{variable}"
 
 Rules:
-- For numeric values, include the unit (e.g. millions, billions) if mentioned
-- For categorical values, return the exact name or label as written
-- If multiple values are present, return the most prominent or consolidated figure
+- For numeric values, return the plain number only — no units, no currency symbols (e.g. return "3,701" not "$3,701 million")
+- For numeric values, prefer the most recent fiscal year's consolidated figure
+- For segment names, list the operating sub-segments (not top-level groups) separated by commas (e.g. "North America, International, Individual Retirement")
 - If the value is not found, return null
 
 Respond ONLY with a JSON object in this exact format:
